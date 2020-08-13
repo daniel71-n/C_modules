@@ -3,8 +3,8 @@
 #include "pstrings.h"
 
 char* str_rev(char* string_to_reverse, char* string_reversed){
-    /* Reverse string_to_reverse, writing the result to the string_reversed char array  
-       string_reversed is uninitialized to a specific length, in the global scope, when this function is caled.
+    /* Reverse string_to_reverse, writing the result to the string_reversed char array.
+       string_reversed is uninitialized to a specific length, in the global scope, when this function is called.
 
        This function calloc-ates memory to string_reversed based on what's determined to be sufficient,
        modifies this newly-created array by assigning values to its indexes, then returns a pointer to the
