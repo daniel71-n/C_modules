@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include "pstrings.h"
 
-char* str_rev(char* string_to_reverse, char* string_reversed){
+char *str_rev(char *string_to_reverse, char *string_reversed){
     /* Reverse string_to_reverse, writing the result to the string_reversed char array.
        string_reversed is uninitialized to a specific length, in the global scope, when this function is called.
 
@@ -23,9 +23,12 @@ char* str_rev(char* string_to_reverse, char* string_reversed){
        in the first place sicne assigning string_reversed to null would render this function useless).
        So that's why a value is being returned - for syntax reasons only - otherwise the assignment operation
        --i.e. e.g. char* someArr = str_rev(string_to_reverse, someArr) -- would fail.      
+
+       The caller will have to call free() manually to deallocate the memory when string_reversed 
+       is no longer needed and can be destroyed.
     */
 
-    char* string_arg = string_to_reverse;
+    char *string_arg = string_to_reverse;
     int orig_length = strlen(string_arg);     //  get the length of 'orig'; this doesn't count the ending null character
     string_reversed = calloc(orig_length+1, sizeof(char));             // an array equal to the length of 'orig' is needed, +1 to hold the ending null character  
 
@@ -38,7 +41,7 @@ char* str_rev(char* string_to_reverse, char* string_reversed){
 
 
 
-void str_rev_ip(char* string_arg){
+void str_rev_ip(char *string_arg){
     /* reverse the string argument (an array of chars) IN PLACE */
     
     unsigned int str_length = strlen(string_arg);  
