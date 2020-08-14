@@ -2,6 +2,9 @@
 
 typedef struct vect Vect;  
 
+void vectRem(Vect *target_vector, unsigned int index);
+char vectPop(Vect *target_vector);
+void vectAdd(Vect *target_vector, char *string_to_append);
 int vectContains(Vect *target_vector, char val);
 void vectInit(Vect *vector_to_initialize, size_t initial_size);
 void vectAppend(Vect *target_vector, char val);
