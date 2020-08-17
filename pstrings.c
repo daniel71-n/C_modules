@@ -71,3 +71,68 @@ void str_rev_ip(char *string_arg){
     }
 }
 
+
+
+void get_binary_string(char *holding_string, void *number_to_convert){
+/* get the binary representation of number_to_convert, and store it in 
+   the holding_string char array.
+
+   The number_to_convert parameter is a void pointer so that that argument passed can
+   be either a  short, an int, a long, a long long etc.
+   Whatever the case, the pointer will be cast to an unsigned long long pointer, which will then be dereferenced, 
+   and its value will be cast to an unsigned long long - the largest integer type. 
+   The value of the variable pointed to by the argument won't be changed, 
+   but copied into the local scope of the function and only modified here.
+
+   The holding_string argument is a character array that needs to be large
+   enough to hold all the characters necesarry for the binary representation
+   of number_to_convert, as well as a terminating NUL. A char array instead of an integer array 
+   is used for space efficiency. Since each item will only be either 1 or 0, and since 
+   a char is guaranteed to only be 1 byte whereas an int is normally larger, 
+   it makes more sense to use an array storing '1's and '0's rather than 1s and 0s, 
+   as the latter would likely be at least twice as large as the former.
+*/
+
+unsigned long long *num_pointer = (unsigned long long *)number_to_convert;
+// casting the number pointer argument to an unsigned long long; 
+// the pointer could well point to something smaller - a signed int, for example - 
+// but promoting the value it points to (below) to an unsigned long long would cause no loss. 
+
+unsigned long long num = *num_pointer;
+// since the value gets cast to a U long long, it means a pointer to anything <= to that can
+// be passed as an argument, in line with however large the number that's wanted to be converted is.
+
+unsigned int compare = 1; // the value that each bit in number_to_convert is AND-ed with 
+unsigned int ind = 0 ;    // indexes the 'holding_string' array
+unsigned int tmp = 0;     //the result (to be converted to a char) of the AND bitwise operation mentioned above
+char to_add; // tmp converted to a char
+
+do {
+	tmp = num & compare;  
+	to_add = tmp + '0';  
+	holding_string[ind]= to_add;
+	ind++;
+	num = num>>1;
+} while(num != 0);
+
+/*
+   While number_to_convert isn't 0: 
+    - AND it with the 'compare' variable, and assign the result to 'tmp'. 'Tmp' will be 1 if the rightmost
+      bit in number_to_compare is 1, and 0 if the rightmost bit in number_to_compare is 0. 
+      The rightmost bit in number_to_compare is the one bit being ANDed with 'compare', since compare
+      is only 1 bit long (its value is simply 1). 
+
+    - Convert tmp to a char, i.e. from 1 to '1' or 0 to '0'. This is done by adding tmp with '0'.
+	This takes advantage of the fact that ASCII's character set has consecutive 
+	number values for representing the '0', '1','2','3'..'9' characters. This means that '5''s value 
+	is 5 places from '0's value, i.e. '0' + 5. 
+    '0' + tmp (which is 1 or 0) will get the ASCII value for '1' or '0'.
+
+    - Shift number_to_convert to the right by one bit and assign this back to number_to_convert. 
+      This discards the rightmost bit, so the subsequent iteration of the loop will have the next bit to the left
+      ANDed with 'compare' until number_to_compare runs out of bits and becomes 0. 
+*/
+}
+
+
+
