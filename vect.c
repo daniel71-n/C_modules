@@ -306,4 +306,25 @@ void i_vectSet(Vect *target_vector, int val, unsigned int index){
     }
 }
 
+void c_vectFree(Vect *target_vector){
+    /*  Free the memory allocated to the managed array of the Vect struct. */
+    assert(target_vector->type==I_ARRAY && "is C_ARRAY");   // abort if .type !=  C_ARRAY
 
+    free(target_vector->dynarray.c);
+    target_vector->dynarray.c = NULL;
+    target_vector->total_array_length=0;
+    target_vector->last_index=-1;
+     // printf("freed. size is now %zu", target_vector->total_array_length);
+
+}
+void i_vectFree(Vect *target_vector){
+    /*  Free the memory allocated to the managed array of the Vect struct. */
+    assert(target_vector->type==I_ARRAY && "is C_ARRAY");   // abort if .type !=  C_ARRAY
+
+    free(target_vector->dynarray.i);
+    target_vector->dynarray.i = NULL;
+    target_vector->total_array_length=0;
+    target_vector->last_index=-1;
+     // printf("freed. size is now %zu", target_vector->total_array_length);
+
+}

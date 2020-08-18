@@ -53,4 +53,5 @@ int i_vectContains(Vect *target_vector, int val);
 void c_vectSet(Vect *target_vector, char val, unsigned int index);    
 void i_vectSet(Vect *target_vector, int val, unsigned int index);    
 
-
+void c_vectFree(Vect *target_vector);
+void i_vectFree(Vect *target_vector);
