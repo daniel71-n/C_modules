@@ -35,14 +35,17 @@ typedef enum array_types VectType;
 /* ------- Function headers ------- */
 void vectInit(Vect *vector_to_initialize, VectType inner_array_type, size_t initial_size);
 
+void vectFree(Vect *target_vector);
+
+void vectRem(Vect *target_vector, unsigned int index);
+void vectRanRem(Vect *target_vector, unsigned int starting_index, unsigned int ending_index);
+
 void c_vectAppend(Vect *target_vector, char val);
 void i_vectAppend(Vect *target_vector, int val);
 
 char c_vectPop(Vect *target_vector);
 int i_vectPop(Vect *target_vector);
 
-void c_vectRem(Vect *target_vector, unsigned int index);
-void i_vectRem(Vect *target_vector, unsigned int index);
 
 void c_vectAdd(Vect *target_vector, char *string_to_append);
 void i_vectAdd(Vect *target_vector, int *int_array_to_append, unsigned int how_many);
@@ -53,5 +56,10 @@ int i_vectContains(Vect *target_vector, int val);
 void c_vectSet(Vect *target_vector, char val, unsigned int index);    
 void i_vectSet(Vect *target_vector, int val, unsigned int index);    
 
-void c_vectFree(Vect *target_vector);
-void i_vectFree(Vect *target_vector);
+/* ------------ NOT to be called directly ------------- */
+void private_vectCheckSize_shrink(Vect *target_vector, VectType inner_array_type);
+void private_vectShrink(Vect *target_vector, void *managed_array, size_t size_of_item);
+void private_vectCheckSize_grow(Vect *target_vector, VectType inner_array_type);
+void private_vectGrow(Vect *target_vector, VectType inner_array_type);
+/* ------------------------------ */
+
