@@ -20,9 +20,12 @@ void vectInit(Vect *vector_to_initialize, VectType inner_array_type, size_t init
        Depending on how you initialized the Vect you called VectInit on (i.e. as a C_ARRAY or an I_ARRAY),
        a different set of functions need to be called to manage it. The functions are essentially the same, 
        but structs whose inner array type is C_ARRAY must call the functions prefixed with 'c_', e.g.
-       c_vectAppend, c_VectRem, c_VectPop etc., while structs whose inner array has been initialized
+       c_vectAppend, c_VectPop etc., while structs whose inner array has been initialized
        as type I_ARRAY must call the functions prefixed with 'i_' instead, e.g. i_vectAppend,
-       i_vectRem, i_VectPop, etc.
+       i_VectPop, etc.
+
+       However, the above doesn't hold true in all cases, but only as far as functions that need to return or take 
+       different types. Ones that don't return anything, e.g. vectRem, vectRanRem, vectFree etc  aren't prefixed as above.
     */
     printf("initial size arg is %zu, and the vecttype arg is %i\n", initial_size, inner_array_type);
 
@@ -146,8 +149,6 @@ void private_vectCheckSize_grow(Vect *target_vector, VectType inner_array_type){
 
 
 
-
-
 void c_vectAppend(Vect *target_vector, char val){
     /* Append a value (specified by the val argument) to the managed array of
        the Vect object specified in the target_vector argument.
@@ -155,19 +156,11 @@ void c_vectAppend(Vect *target_vector, char val){
       The index the val argument is assigned to is the last_index member in the Vect struct, + 1.  
     */
     assert(target_vector->type==C_ARRAY && "is C_ARRAY");
-    printf("last index initial value is %i", target_vector->last_index);
+
     target_vector->dynarray.c[target_vector->last_index+1]=val;       // last_index's initial value is set to -1, so the first value will be appended at index -1+1 => 0.
     target_vector->last_index = target_vector->last_index+1;                                    // increment last_index, and consequently the position of the next append operation. 
-    printf("in vectappend: last index is now %i", target_vector->last_index);
     target_vector->dynarray.c[target_vector->last_index+1]= '\0';     // set the value of the index immediately following last_index to NUL.
-    printf("appending to NUL to position %u\n", target_vector->last_index+1);
     private_vectCheckSize_grow(target_vector, C_ARRAY);
-    /*
-    printf("total array length, %zu\n", target_vector->total_array_length);
-    for (unsigned int ind = 0; ind < target_vector->total_array_length; ind++) {
-       printf("current index %u, value %c\n", ind, target_vector->dynarray.c[ind]);
-    }
-    */
 }
      
 
@@ -179,32 +172,12 @@ void i_vectAppend(Vect *target_vector, int val){
       The index the val argument is assigned to is the last_index member in the Vect struct+1.  
     */
     assert(target_vector->type==I_ARRAY && "is I_ARRAY");
-    
+
     target_vector->dynarray.i[target_vector->last_index+1]=val;       // last_index's initial value is set to -1, so the first value will be appended at index -1+1 => 0.
-    target_vector->last_index++;                                    // increment last_index, and consequently the position of the next append operation. 
-     // printf("appending to position %u\n", target_vector->last_index);
-
-    /*
-    printf("total array length, %zu\n", target_vector->total_array_length);
-    for (unsigned int ind = 0; ind <= target_vector->last_index; ind++) {
-        printf("current index %u, value %i\n", ind, target_vector->dynarray.i[ind]);
-    }
-    */
-    if (target_vector->last_index+2 > target_vector->total_array_length){  // it's only last_index+2 here because int arrays don't need to be NUL terminated
-                                                                            // so in a 4-item array, for example, you can assign even to the last index, i.e.
-                                                                            // [3], before resizing the array, whereas char arrays would resize after [2] is assigned to.
-
-       int *check_not_null;
-       if (!(check_not_null = realloc(target_vector->dynarray.i, sizeof(int) * target_vector->total_array_length*2))){     // if the returned value is NULL
-         // printf("realloc failed to allocate memory to char array\n");
-        exit(EXIT_FAILURE);
-        }  
-       target_vector->dynarray.i = check_not_null;     // double the innerarray of the vector struct in size.
-       target_vector->total_array_length = target_vector->total_array_length*2;
-        // printf("the array has been doubled in size.\n The new size is %zu\n", target_vector->total_array_length);
-    }
+    target_vector->last_index = target_vector->last_index+1;                                    // increment last_index, and consequently the position of the next append operation. 
+    target_vector->dynarray.i[target_vector->last_index+1]= '0';     
+    private_vectCheckSize_grow(target_vector, C_ARRAY);
 }
-
 
 
 

@@ -60,6 +60,6 @@ void i_vectSet(Vect *target_vector, int val, unsigned int index);
 void private_vectCheckSize_shrink(Vect *target_vector, VectType inner_array_type);
 void private_vectShrink(Vect *target_vector, void *managed_array, size_t size_of_item);
 void private_vectCheckSize_grow(Vect *target_vector, VectType inner_array_type);
-void private_vectGrow(Vect *target_vector, VectType inner_array_type);
+void private_vectGrow(Vect *target_vector, void *managed_array, size_t size_of_item);
 /* ------------------------------ */
 
