@@ -28,22 +28,16 @@ void vectFree(Vect *target_vector);
 
 void vectRem(Vect *target_vector, unsigned int index);
 void vectRanRem(Vect *target_vector, unsigned int starting_index, unsigned int ending_index);
-
-void c_vectAppend(Vect *target_vector, char val);
-void i_vectAppend(Vect *target_vector, int val);
+void vectAppend(Vect *target_vector, void *val);
+int vectContains(Vect *target_vector, void *val);
+void vectSet(Vect *target_vector, void *val, unsigned int index);    
 
 char c_vectPop(Vect *target_vector);
 int i_vectPop(Vect *target_vector);
 
-
 void c_vectAdd(Vect *target_vector, char *string_to_append);
 void i_vectAdd(Vect *target_vector, int *int_array_to_append, unsigned int how_many);
 
-int c_vectContains(Vect *target_vector, char val);
-int i_vectContains(Vect *target_vector, int val);
-
-void c_vectSet(Vect *target_vector, char val, unsigned int index);    
-void i_vectSet(Vect *target_vector, int val, unsigned int index);    
 
 /* ------------ NOT to be called directly ------------- */
 void private_vectCheckSize_shrink(Vect *target_vector, VectType inner_array_type);

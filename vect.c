@@ -18,14 +18,22 @@ void vectInit(Vect *vector_to_initialize, VectType inner_array_type, size_t init
        of the dynarray union nested in the Vect struct.
 
        Depending on how you initialized the Vect you called VectInit on (i.e. as a C_ARRAY or an I_ARRAY),
-       a different set of functions need to be called to manage it. The functions are essentially the same, 
-       but structs whose inner array type is C_ARRAY must call the functions prefixed with 'c_', e.g.
-       c_vectAppend, c_VectPop etc., while structs whose inner array has been initialized
-       as type I_ARRAY must call the functions prefixed with 'i_' instead, e.g. i_vectAppend,
+       a different set of functions might need to be called to manage it. The functions are essentially the same, 
+       but Vects whose managed array type is C_ARRAY must call the functions prefixed with 'c_', e.g.
+       c_vectContains, c_VectPop etc., while structs whose inner array has been initialized
+       as type I_ARRAY must call the functions prefixed with 'i_' instead, e.g. i_vectContains,
        i_VectPop, etc.
 
-       However, the above doesn't hold true in all cases, but only as far as functions that need to return or take 
-       different types. Ones that don't return anything, e.g. vectRem, vectRanRem, vectFree etc  aren't prefixed as above.
+       However, the examples above are the only ones where this applies: i.e. it only holds true for functions that
+       either needs to return a different type (c_VectPop returns a char and i_vectPop returns an int), or ones that differ
+       in terms of the parameters taken (i_vectContains has an extra how_many parameter that c_vectContains does not).
+
+       Functions that don't return anything, on the other hand, and others that only cause a change to the Vect struct 
+       or its managed array (with the exception of c_vectContains and i_VectContains, as explained above),
+       don't have a type-specific definition, but use void pointers, which will then be cast to a pointer of 
+       the right type (by looking at the type enum attribute inside the struct -- I_ARRAY, C_ARRAY),
+       before being dereferenced. As a result, in most cases the same function can be called whether 
+       Vect has been initialized with a char or int array: e.g. vectRem, vectFree, vectAppend, vectSet, vectRanRem etc.
     */
     printf("initial size arg is %zu, and the vecttype arg is %i\n", initial_size, inner_array_type);
 
@@ -149,34 +157,37 @@ void private_vectCheckSize_grow(Vect *target_vector, VectType inner_array_type){
 
 
 
-void c_vectAppend(Vect *target_vector, char val){
+
+
+void vectAppend(Vect *target_vector, void *val){
     /* Append a value (specified by the val argument) to the managed array of
        the Vect object specified in the target_vector argument.
 
       The index the val argument is assigned to is the last_index member in the Vect struct, + 1.  
+      The type of the managaded array is determined by looking at the 'type' memeber: I_ARRAY, C_ARRAY.
     */
-    assert(target_vector->type==C_ARRAY && "is C_ARRAY");
-
-    target_vector->dynarray.c[target_vector->last_index+1]=val;       // last_index's initial value is set to -1, so the first value will be appended at index -1+1 => 0.
-    target_vector->last_index = target_vector->last_index+1;                                    // increment last_index, and consequently the position of the next append operation. 
-    target_vector->dynarray.c[target_vector->last_index+1]= '\0';     // set the value of the index immediately following last_index to NUL.
-    private_vectCheckSize_grow(target_vector, C_ARRAY);
-}
-     
-
-
-void i_vectAppend(Vect *target_vector, int val){
-    /* Append a value (specified by the val argument) to the managed array of 
-       the Vect object specified in the target_vector argument.
-
-      The index the val argument is assigned to is the last_index member in the Vect struct+1.  
-    */
-    assert(target_vector->type==I_ARRAY && "is I_ARRAY");
-
-    target_vector->dynarray.i[target_vector->last_index+1]=val;       // last_index's initial value is set to -1, so the first value will be appended at index -1+1 => 0.
-    target_vector->last_index = target_vector->last_index+1;                                    // increment last_index, and consequently the position of the next append operation. 
-    target_vector->dynarray.i[target_vector->last_index+1]= '0';     
-    private_vectCheckSize_grow(target_vector, C_ARRAY);
+    switch(target_vector->type){
+        case C_ARRAY:{
+            char value = *(char*)val;
+            target_vector->dynarray.c[target_vector->last_index+1]=value;       
+            // last_index's initial value is set to -1, so the first value will be appended at index -1+1 => 0.
+            target_vector->last_index = target_vector->last_index+1;      
+            // increment last_index, and consequently the position of the next append operation. 
+            target_vector->dynarray.c[target_vector->last_index+1]= '\0';    
+            // set the value of the index immediately following last_index to NUL.
+            private_vectCheckSize_grow(target_vector, C_ARRAY);
+            // check if the managed array needs an increase in size.
+        }
+            break;
+        case I_ARRAY:{
+            int value = *(int*)val;
+            target_vector->dynarray.i[target_vector->last_index+1]=value;       
+            target_vector->last_index = target_vector->last_index+1;                         
+            target_vector->dynarray.i[target_vector->last_index+1]= '0';     
+            private_vectCheckSize_grow(target_vector, C_ARRAY);
+        }
+            break;
+    }
 }
 
 
@@ -188,7 +199,7 @@ void c_vectAdd(Vect *target_vector, char *string_to_append){
     for (unsigned int ind = 0; string_to_append[ind] != '\0'; ind++) {
          printf("appending %c\n", string_to_append[ind]);
           // printf("string now %s\n", target_vector->dynarray.c);
-        c_vectAppend(target_vector, string_to_append[ind]);
+        vectAppend(target_vector, &string_to_append[ind]);
     }
 }
 
@@ -210,7 +221,7 @@ void i_vectAdd(Vect *target_vector, int *int_array_to_append, unsigned int how_m
     for (unsigned int ind = 0; ind < how_many; ind++) {     // '\0' can't be used to find the end of an array, so -1 is being used as the sentinel instead 
          // printf("appending %i\n", int_array_to_append[ind]);
          // printf("last index is now %i\n", target_vector->dynarray.i[target_vector->last_index]);
-        i_vectAppend(target_vector, int_array_to_append[ind]);
+        vectAppend(target_vector, &int_array_to_append[ind]);
     }
 }
 
@@ -350,78 +361,76 @@ void vectRanRem(Vect *target_vector, unsigned int starting_index, unsigned int e
 
 
 
-int c_vectContains(Vect *target_vector, char val){
+int vectContains(Vect *target_vector, void *val){
     /* Return an integer representing the index of the first occurence of val, if found, 
        else -1. 
     */
-    assert(target_vector->type==I_ARRAY && "is C_ARRAY");   // abort if .type !=  C_ARRAY
-     // printf("val to search for is %c\n", val);
-    int res;
-    for (unsigned int ind=0; ind <= target_vector->last_index; ind++){
-        if (target_vector->dynarray.c[ind] == val){
-            res=ind;
-            break;
-        }
-        else if (target_vector->dynarray.c[ind] == '\0'){
-            res=-1;
-             // printf("bumped into NUL at index %i\n", ind);
-            break;
-        }
-    }
-    return res;
-}
-
-
-int i_vectContains(Vect *target_vector, int val){
-    /* Return an integer representing the index of the first occurence of val, if found, 
-       else -1. 
-    */
-    assert(target_vector->type==I_ARRAY && "is I_ARRAY");   // abort if .type !=  C_ARRAY
-     // printf("val to search for is %i\n", val);
-    int res;
-    for (unsigned int ind=0; ind <= target_vector->last_index; ind++){
-        if (target_vector->dynarray.i[ind] == val){
-            res=ind;
+    switch(target_vector->type){
+        case C_ARRAY:{
+            char value = *(char*)val;
+            int res;
+            for (unsigned int ind=0; ind <= target_vector->last_index; ind++){
+                if (target_vector->dynarray.c[ind] == value){
+                    res=ind;
+                    break;
+                }
+                else if (target_vector->dynarray.c[ind] == '\0'){
+                    res=-1;
+                     // printf("bumped into NUL at index %i\n", ind);
+                    break;
+                }
+            }
             return res;
         }
+        break;
+
+    case I_ARRAY:{
+        int value = *(int*)val;
+        int res;
+        for (unsigned int ind=0; ind <= target_vector->last_index; ind++){
+            if (target_vector->dynarray.i[ind] == value){
+                res=ind;
+                return res;
+            }
+        }
+        return -1;
+        }
+        break;
     }
-    return -1;
 }
 
 
 
-void c_vectSet(Vect *target_vector, char val, unsigned int index){
+void vectSet(Vect *target_vector, void *val, unsigned int index){
     /* assign val to the managed array of the Vect struct at index INDEX,
        if index is < last_index, else append the value instead.
     */
-    assert(target_vector->type==I_ARRAY && "is C_ARRAY");   // abort if .type !=  C_ARRAY
-   
-    if (index <= target_vector->last_index){
-        target_vector->dynarray.c[index] = val;
-    }
-    else{
-         // printf("attempted to change an empty slot. Appending instead...\n");
-        c_vectAppend(target_vector, val);
-    }
+    switch(target_vector->type){
+        case C_ARRAY:{
+            char value = *(char*)val;   // cast the void pointer to a char ptr, then dereference that
+            if (index <= target_vector->last_index){
+                target_vector->dynarray.c[index] = value;
+            }
+            else{
+                 // printf("attempted to change an empty slot. Appending instead...\n");
+                vectAppend(target_vector, &value);
+            }
+        }
+            break;
+
+        case I_ARRAY:{
+            int value = *(int*)val;
+            if (index <= target_vector->last_index){
+                    target_vector->dynarray.i[index] = value;
+                }
+                else{
+                     // printf("attempted to change an empty slot. Appending instead...\n");
+                    vectAppend(target_vector, &val);
+                }
+        }
+            break;
+        }
 }
-
-
-
-void i_vectSet(Vect *target_vector, int val, unsigned int index){
-    /* assign val to the managed array of the Vect struct at index INDEX,
-       if index is < last_index, else append the value instead.
-    */
-    assert(target_vector->type==I_ARRAY && "is I_ARRAY");   // abort if .type !=  C_ARRAY
-   
-    if (index <= target_vector->last_index){
-        target_vector->dynarray.i[index] = val;
-    }
-    else{
-         // printf("attempted to change an empty slot. Appending instead...\n");
-        i_vectAppend(target_vector, val);
-    }
-}
-
 
 
 void vectFree(Vect *target_vector){
