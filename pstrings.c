@@ -120,7 +120,7 @@ do {
     - AND it with the 'compare' variable, and assign the result to 'tmp'. 'Tmp' will be 1 if the rightmost
       bit in number_to_compare is 1, and 0 if the rightmost bit in number_to_compare is 0. 
       The rightmost bit in number_to_compare is the one bit being ANDed with 'compare', since compare
-      is only 1 bit long (its value is simply 1). 
+      only has one '1' bit (its value is simply 1). 
 
     - Convert tmp to a char, i.e. from 1 to '1' or 0 to '0'. This is done by adding tmp with '0'.
 	This takes advantage of the fact that ASCII's character set has consecutive 
