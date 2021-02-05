@@ -114,7 +114,7 @@ do {
 	ind++;
 	num = num>>1;
 } while(num != 0);
-
+// ++ Reverse the string, since at this point the 'bits' are stored backward, from right to left
 /*
    While number_to_convert isn't 0: 
     - AND it with the 'compare' variable, and assign the result to 'tmp'. 'Tmp' will be 1 if the rightmost
