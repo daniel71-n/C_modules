@@ -5,9 +5,9 @@
 
 
 uint8_t Count_bits(long long num){
-/* Count and return the number of bits in num 
+/* Count and return the number of bits in num.
 
-   num can be any integer type <= long long
+   num can be any integer type <= long long.
 */
     uint8_t count = 0;
 
@@ -77,14 +77,15 @@ void get_binary_string(char *holding_string, long long number_to_convert){
 
                                         * * *
 
-    NOTES
+   NOTES
 
-    tmp below is converted from an integer with a value of 1 or 0 to a char, i.e. from 1 to '1' or 0 to '0'. 
-    This is done by adding tmp up with '0'.
-	This takes advantage of the fact that ASCII's character set has consecutive 
-	number values for representing the '0', '1','2','3'..'9' characters. This means that '5''s value 
-	is 5 places from '0's value, i.e. '0' + 5. 
-    '0' + tmp (which is 1 or 0) will get the ASCII value for '1' or '0'.
+   tmp below is converted from an integer with a value of 1 or 0 to a char, i.e. from 1 to '1' or 0 to '0'. 
+   This is done by adding tmp up with '0'.
+   
+   This takes advantage of the fact that ASCII's character set has consecutive number values for 
+   representing the '0', '1','2','3'..'9' characters. This means that '5''s value is 5 places 
+   from '0's value, i.e. '0' + 5. 
+   0' + tmp (which is 1 or 0) will get the ASCII value for '1' or '0'.
 */
     uint8_t ind = 0 ; 
     uint8_t tmp = 0;  
