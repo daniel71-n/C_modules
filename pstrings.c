@@ -1,5 +1,6 @@
 #include <stdint.h>
 #include <stdlib.h>
+#include <sys/types.h>
 #include "pstrings.h"
 
 
@@ -160,5 +161,53 @@ char *str_tokenize(char string_arg[], char delimiter){
 }
 
 
+
+
+uint8_t str_count_digits(int32_t num){
+    /* Count digits in num */
+    uint8_t digits = 0;
+
+    while(num){
+        digits++;
+        num /= 10;  // dividing by 10 will get rid of the rightmost digit
+    }
+    
+    return digits;
+}
+
+
+char *str_from_int(int32_t num){
+    /*Conver num to "num" */
+   
+    // used to find out the size that the array should be, and also used to index the
+    // array afterward, down below in the while loop
+    uint8_t array_size = str_count_digits(num);     
+    uint8_t digit = 0;
+
+    // if num is 0
+    if (!array_size){
+        return NULL;
+    }
+
+    // the array that will hold the ASCII representation of the digits in num
+    char *res = malloc(sizeof(char) * (array_size+1));
+    if (!res){
+        return NULL;
+    }
+
+    res[array_size] = '\0';     // NUL-terminate the string
+    array_size--;
+
+    digit = num % 10;  // 17 % 10 is 7, and so is  % 10    
+    num /= 10; // drop the rightmost digit
+    while(digit){
+       res[array_size] = '0' + digit;    // convert to ASCII and write to array
+
+       array_size--;
+       digit = num % 10;
+       num /= 10;
+    }
+    return res;
+}
 
 
