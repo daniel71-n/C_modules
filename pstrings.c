@@ -108,7 +108,7 @@ char *str_tokenize(char string_arg[], char delimiter){
     /* Return the next token in string_arg when called.
 
        A token is a substring delimitated by delimiter.
-       e.g. 'my_name_is_x' has 5 tokens and 3 delimiters.
+       e.g. 'my_name_is_x' has 4 tokens and 3 delimiters.
 
        The initial call to the function has to specify the 
        string to tokenize. After that, unless another string
