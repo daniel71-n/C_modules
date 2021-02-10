@@ -104,3 +104,39 @@ int32_t str_to_int(char string_arg[]){
 
 
 
+char *str_tokenize(char string_arg[], char delimiter){
+    static char *input_string;
+    static char *token;    // a pointer to the next token found;
+    static int32_t index;
+
+     if (string_arg){
+        token = string_arg;
+        input_string = string_arg;
+        index = 0;
+    }
+
+   
+    char *res = NULL;
+
+    while(input_string[index] != '\0'){
+        if (input_string[index] == delimiter){
+            res = token; 
+            input_string[index] = '\0';  // replace the delimiter with a NUL, to terminate the string (token) here
+            token = &input_string[index+1];
+            index++;
+
+            return res;
+        }
+        index++;
+    }
+    // the loop is exhausted; last token
+    // return that token
+    res = token;
+    // then set it to null, so that on the next call the reurn value is null
+    token = NULL;
+    return res;
+}
+
+
+
+
