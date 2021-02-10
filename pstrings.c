@@ -181,7 +181,8 @@ char *str_from_int(int32_t num){
    
     // used to find out the size that the array should be, and also used to index the
     // array afterward, down below in the while loop
-    uint8_t array_size = str_count_digits(num);     
+    uint8_t array_size = str_count_digits(num);
+    uint8_t iterations = array_size;    // the number of times the while at the bottom needs to execute
     uint8_t digit = 0;
 
     // if num is 0
@@ -200,12 +201,14 @@ char *str_from_int(int32_t num){
 
     digit = num % 10;  // 17 % 10 is 7, and so is  % 10    
     num /= 10; // drop the rightmost digit
-    while(digit){
+     // for (uint8_t i = 0, end = array_size; i < end; i++){
+    while(iterations){
        res[array_size] = '0' + digit;    // convert to ASCII and write to array
-
        array_size--;
+
        digit = num % 10;
        num /= 10;
+       iterations--;
     }
     return res;
 }
