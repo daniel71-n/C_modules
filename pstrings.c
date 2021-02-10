@@ -105,18 +105,37 @@ int32_t str_to_int(char string_arg[]){
 
 
 char *str_tokenize(char string_arg[], char delimiter){
+    /* Return the next token in string_arg when called.
+
+       A token is a substring delimitated by delimiter.
+       e.g. 'my_name_is_x' has 5 tokens and 3 delimiters.
+
+       The initial call to the function has to specify the 
+       string to tokenize. After that, unless another string
+       needs to be tokenized, the function is called with NULL
+       as the first argument, to indicate that it should continue
+       tokenizing the same string.
+
+       The function maintains internal state by using static variables.
+       Since the whole input string is not tokenized at once, but bit by
+       bit with each call, this is a form of lazy evaluation.
+    */
+
+    // static variables, only initialized when string_arg is not NULL 
     static char *input_string;
     static char *token;    // a pointer to the next token found;
     static int32_t index;
+    static char *res;
 
+    // if string_arg is not NULL, (re) initialize the static variables (internal state)
      if (string_arg){
         token = string_arg;
         input_string = string_arg;
         index = 0;
+        res = NULL;
     }
 
    
-    char *res = NULL;
 
     while(input_string[index] != '\0'){
         if (input_string[index] == delimiter){
@@ -129,10 +148,13 @@ char *str_tokenize(char string_arg[], char delimiter){
         }
         index++;
     }
-    // the loop is exhausted; last token
-    // return that token
+    // the loop is exhausted; last token -> return it
+    // NOTE: what's left here is the rest of the original input string from after the last token
+    // until the final Nul
+
+    // return this last bit
     res = token;
-    // then set it to null, so that on the next call the reurn value is null
+    // then set token to null, so that on the next call the reurn value is null
     token = NULL;
     return res;
 }
