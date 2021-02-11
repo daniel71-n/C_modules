@@ -15,4 +15,7 @@ char *str_from_int(int32_t num);
 uint8_t str_count_digits(int32_t num);
 
 // split string_arg into tokens and return a pointer to the next token on each call
+
 char *str_tokenize(char string_arg[], char delimiter);
+
+int32_t str_copy(char str1[], char str2[]);

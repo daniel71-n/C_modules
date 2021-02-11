@@ -214,3 +214,36 @@ char *str_from_int(int32_t num){
 }
 
 
+int32_t str_copy(char str1[], char str2[]){
+    /* Copy the contents of str2 into str1 until NULL is encountered.
+
+       Return -1 if any of the strings are NULL (and thus invalid input),
+       or else the value of the index when the copying is done, i.e.
+       where in str1 the process finished.
+
+       This might be useful for knowing exactly where to terminate str1
+       or/and knowing where to continue copying from another string.
+
+       For example, if str1 is 25 chars long and str2 is 10 chars long,
+       str_copy will copy everything in str2 into str1 (10 chars),
+       and then it will stop, because it ran into NUL, the string 
+       terminatior for str2.
+       Str_copy does not terminate str1. Instead, it will return 
+       the value 11, in this case. 
+       The caller can then either insert NULL here and terminate str1
+       ( str1[the_return_value_of_str_copy] = '\0'), or call
+       str_copy with str1 again, and another string.
+       Str_copy will then start copying from str2 and inserting
+       the read items into str1 starting at str1[11].
+    */
+    if (str1 == NULL || str2 == NULL){
+        return -1;
+    }
+    int32_t i = 0;
+    for (; str2[i] != '\0'; i++){
+        str1[i] = str2[i];
+    }
+    return i;
+}
+
+
