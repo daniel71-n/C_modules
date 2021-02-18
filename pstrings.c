@@ -11,7 +11,12 @@ unsigned int str_len(char string_arg[]){
    all strings are Nul-terminated. If a char array
    is not Nul terminated, then it's not a string,
    and the length can't be determined correctly.
+
+   0 is returned if string_arg is NULL.
 */
+    if (!string_arg){
+        return 0;
+    }
     unsigned int ind = 0, count = 0;
 
     while(string_arg[ind] != '\0'){
@@ -69,16 +74,16 @@ void str_rev_ip(char string_arg[]){
 
 
 
-int32_t str_to_int(char string_arg[]){
+long str_to_int(char string_arg[]){
     /* Convert string_arg to an integer, and return that.
 
        string_arg must not contain non-numeric characters 
        or be NULL, and it must be NUL-terminated.
     */
-    int32_t res = 0;    // store the final result
-    uint8_t digit = 0;  // store each digit as it's computed
-    uint8_t sign = 0;   // if 1, add negative sign, if 0, keep positive
-    uint8_t i = 0;  // index;
+    long res = 0;    // store the final result
+    unsigned short digit = 0;  // store each digit as it's computed
+    unsigned short sign = 0;   // if 1, add negative sign, if 0, keep positive
+    unsigned short i = 0;  // index;
     
     if (string_arg[0] == '-'){
         sign = 1;   // it's a negative number
@@ -125,7 +130,7 @@ char *str_tokenize(char string_arg[], char delimiter){
     // static variables, only initialized when string_arg is not NULL 
     static char *input_string;
     static char *token;    // a pointer to the next token found;
-    static int32_t index;
+    static long index;
     static char *res;
 
     // if string_arg is not NULL, (re) initialize the static variables (internal state)
@@ -163,9 +168,9 @@ char *str_tokenize(char string_arg[], char delimiter){
 
 
 
-uint8_t str_count_digits(int32_t num){
+unsigned short str_count_digits(long num){
     /* Count digits in num */
-    uint8_t digits = 0;
+    unsigned short digits = 0;
 
     while(num){
         digits++;
@@ -176,14 +181,14 @@ uint8_t str_count_digits(int32_t num){
 }
 
 
-char *str_from_int(int32_t num){
+char *str_from_int(long num){
     /*Conver num to "num" */
    
     // used to find out the size that the array should be, and also used to index the
     // array afterward, down below in the while loop
-    uint8_t array_size = str_count_digits(num);
-    uint8_t iterations = array_size;    // the number of times the while at the bottom needs to execute
-    uint8_t digit = 0;
+    unsigned short array_size = str_count_digits(num);
+    unsigned short iterations = array_size;    // the number of times the while at the bottom needs to execute
+    unsigned short digit = 0;
 
     // if num is 0
     if (!array_size){
@@ -201,7 +206,7 @@ char *str_from_int(int32_t num){
 
     digit = num % 10;  // 17 % 10 is 7, and so is  % 10    
     num /= 10; // drop the rightmost digit
-     // for (uint8_t i = 0, end = array_size; i < end; i++){
+     // for (unsigned short i = 0, end = array_size; i < end; i++){
     while(iterations){
        res[array_size] = '0' + digit;    // convert to ASCII and write to array
        array_size--;
@@ -214,7 +219,7 @@ char *str_from_int(int32_t num){
 }
 
 
-int32_t str_copy(char str1[], char str2[]){
+long str_copy(char str1[], char str2[]){
     /* Copy the contents of str2 into str1 until NULL is encountered.
 
        Return -1 if any of the strings are NULL (and thus invalid input),
@@ -239,11 +244,43 @@ int32_t str_copy(char str1[], char str2[]){
     if (str1 == NULL || str2 == NULL){
         return -1;
     }
-    int32_t i = 0;
+    long i = 0;
     for (; str2[i] != '\0'; i++){
         str1[i] = str2[i];
     }
     return i;
 }
+
+
+
+unsigned short str_compare(char str1[], char str2[]){
+    unsigned int str1_length = str_len(str1);
+    unsigned int str2_length = str_len(str2);
+    unsigned int iterations = (str1_length < str2_length) ? str1_length : str2_length;
+
+    for (unsigned int i = 0; i < iterations; i++){
+        if (str1[i] < str2[i]){
+            return 2;
+        }
+        else if (str1[i] > str2[i]){
+            return 0;
+        }
+    }
+    // if the flow of control gets to this point without having already
+    // returned 0 or 2, then the strings are equal. Compare the lengths
+    if (str1_length < str2_length){
+        return 2;
+    }
+    else if (str1_length > str2_length){
+        return 0;
+    }
+    else{
+        //strings are identical
+        return 1;
+    }
+}
+
+
+
 
 
