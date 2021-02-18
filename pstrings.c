@@ -11,12 +11,7 @@ unsigned int str_len(char string_arg[]){
    all strings are Nul-terminated. If a char array
    is not Nul terminated, then it's not a string,
    and the length can't be determined correctly.
-
-   0 is returned if string_arg is NULL.
 */
-    if (!string_arg){
-        return 0;
-    }
     unsigned int ind = 0, count = 0;
 
     while(string_arg[ind] != '\0'){
@@ -277,6 +272,18 @@ unsigned short str_compare(char str1[], char str2[]){
     else{
         //strings are identical
         return 1;
+    }
+}
+
+
+
+bool str_is_same(char str1[], char str2[]){
+    unsigned short res = str_compare(str1, str2);
+    // str_compare returns 1 if str1 and str2 are identical
+    if (res == 1){
+        return true;
+    }else{
+        return false;
     }
 }
 

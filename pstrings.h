@@ -1,8 +1,5 @@
-// "Header guard" preprocessor directive to avoid duplicate inclusions.
-#ifndef PSTRINGS_H
-#define PSTRINGS_H
-
 #include <stdint.h>
+#include <stdbool.h>
 
 void str_rev_ip(char string_arg[]);   // reverse string_arg in place
 void str_rev(char string_to_reverse[], char string_reversed[]);  // reverse string_arg and store the result in string_reversed
@@ -67,11 +64,11 @@ long str_copy(char str1[], char str2[]);
  * In line with the position of the characters in the ASCII character
  * set, uppercase is considered to be smaller than lowercase. 
  * i.e. 'A' < 'a'.
- *
- * If both str1 and str2 are NULL, 1 is returned. Else if only one
- * of them is NULL, it's considered to have length 0 and the comparison
- * will be based on that.
  */
 unsigned short str_compare(char str1[], char str2[]);
 
-#endif
+bool str_is_same(char str1[], char str2[]);
+
+
+
+
